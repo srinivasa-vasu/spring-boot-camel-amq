@@ -24,6 +24,17 @@
     <maven-compiler-plugin.version>3.6.0</maven-compiler-plugin.version>
     <maven-surefire-plugin.version>2.19.1</maven-surefire-plugin.version>
   </properties>
+  
+  <distributionManagement>
+	   <repository>
+		 <id>nexus</id>
+		 <url>http://nexus:8081/content/repositories/releases</url>
+	   </repository>
+	   <snapshotRepository>
+		 <id>nexus</id>
+		 <url>http://nexus:8081/content/repositories/snapshots</url>
+	   </snapshotRepository>
+  </distributionManagement>
 
   <dependencyManagement>
     <dependencies>
@@ -114,6 +125,37 @@
         <artifactId>fabric8-maven-plugin</artifactId>
         <version>${fabric8.maven.plugin.version}</version>
       </plugin>
+      
+      <plugin>
+			    <artifactId>maven-surefire-plugin</artifactId>
+			    <version>${maven-surefire-plugin.version}</version>
+			 </plugin>
+			 <plugin>
+			    <groupId>org.sonarsource.scanner.maven</groupId>
+			    <artifactId>sonar-maven-plugin</artifactId>
+			    <version>3.0.1</version>
+			 </plugin>
+			 <plugin>
+			    <groupId>org.jacoco</groupId>
+			    <artifactId>jacoco-maven-plugin</artifactId>
+			    <version>0.7.6.201602180812</version>
+			    <executions>
+			       <execution>
+				  <id>default-prepare-agent</id>
+				  <goals>
+				     <goal>prepare-agent</goal>
+				  </goals>
+			       </execution>
+			       <execution>
+				  <id>default-report</id>
+				  <phase>prepare-package</phase>
+				  <goals>
+				     <goal>report</goal>
+				  </goals>
+			       </execution>
+			    </executions>
+			 </plugin>
+      
     </plugins>
   </build>
 </project>
