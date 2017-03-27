@@ -27,31 +27,18 @@ node('maven') {
    stage 'Deploy DEV'
    sh "rm -rf oc-build && mkdir -p oc-build/target"
    sh "rm -rf oc-build && mkdir -p oc-build"
-   //sh "cp target/*.jar oc-build/target/"
-   //sh "cp Dockerfile oc-build/"
-   // clean up. keep the image stream
    sh "oc project ${devProj}"
-   sh "oc delete bc,dc,svc,route -l app=${appName} -n ${devProj}"
-   // create build. override the exit code since it complains about exising imagestream
-   sh "oc new-build openshift/fis-java-openshift:2.0~https://github.com/fabric8-quickstarts/spring-boot-camel-amq.git --name=${appName} -l app=${appName} -n ${devProj} || true"
-   //sh "oc new-build --binary --name=${appName} -l app=${appName} -n dev || true"
-   // build image
-   // sh "oc start-build ${appName} --from-dir=oc-build --wait=true -n dev"
    sh "oc start-build ${appName} --wait=true -n ${devProj}"
-   // deploy image
-   sh "oc new-app ${appName} -l app=${appName} -p ACTIVEMQ_SERVICE_NAME=broker-amq -n ${devProj}"
-   //sh "oc expose svc/${appName} -n dev"
 
    stage 'Deploy STAGE'
    input message: "Promote to STAGE?", ok: "Promote"
-   sh "oc project stage"
+   sh "oc project ${stageProj}"
    // tag for stage
-   sh "oc tag dev/${appName}:latest stage/${appName}:${v}"
+   sh "oc tag ${devProj}/${appName}:latest ${stageProj}/${appName}:${v}"
    // clean up. keep the imagestream
    sh "oc delete bc,dc,svc,route -l app=${appName} -n ${stageProj}"
    // deploy stage image
    sh "oc new-app ${appName}:${v} -n ${stageProj}"
-   // sh "oc expose svc/${appName} -n ${stageProj}"
 }
 
 def version() {
